@@ -1,0 +1,163 @@
+Add Liquidity Transaction
+https://bscscan.com/tx/0x07a3b714980e19418d1ec567435acbd46d65c9e3a919ad0411534d1275a046f8
+
+Liqudity pair address: 0x47a0211e13f954445d01c9b167b6011a77d75747
+
+
+Buy Before Add Liquidity
+https://bscscan.com/tx/0x0bab6f3a39cffca04020f16cb5a8369b06b3431ba89ec7a329083f167e6e86fb
+
+Buy After Add Liquidity
+https://bscscan.com/tx/0xe0db3ebddcbd9efb4c39d05c337be4ac87e9673ad30a31a2c404f44d7bbc6503
+
+
+Add Liquidity Transaction
+https://bscscan.com/tx/0xb36286622aa22716757b14c399c595c595931944852d163982f29bf3ae136c3f
+
+
+Add Liquidity Transaction
+https://bscscan.com/address/0x43019559f894605b5d20858bd6582def9ea52cfd#tokentxns
+
+
+
+
+
+
+==================
+
+Sell
+sender
+amount0In > 0
+amount1In = 0
+amount0Out = 0
+amount1Out > 0
+
+
+Buy
+
+amount0In > 0
+amount1In = 0
+amount0Out = 0
+amount1Out > 0
+
+=================
+
+Examples
+
+Pair Contract Address: 0xd4c5F2F3BbBDBde865Adc138B8A928c829f479B0
+Token Address: 0x06a1ffe10ed622c0896413e844cf471c0fe6ffff
+
+Transaction hash: 0x4e8118db04e44ea6c6c614680ab69f46af2ae9da7e5e85c11c8af76f91331b28
+sender: 0xA96A96669295e85aF046026bf714A26E84096889
+amount0In: 159268926227863345790783
+amount1In: 0
+amount0Out: 0
+amount1Out: 10350185444649881
+to: 0x3156020dfF8D99af1dDC523ebDfb1ad2018554a0
+Transaction hash: 0xc6174a209071ec9990ff0670f41ecc181549f19de98dd6c1270377d137292a64
+sender: 0x8086C0D903eD072cD7362b79b314347C57A3C77d
+amount0In: 95934219463196898611278
+amount1In: 0
+amount0Out: 0
+amount1Out: 6227723171587046
+to: 0x3d90f66B534Dd8482b181e24655A9e8265316BE9
+Transaction hash: 0xaaba5aa8a268a814c1dfcd6ad6a37f94d1bb70d24afe40f297935657308a327e
+sender: 0x1de460f363AF910f51726DEf188F9004276Bf4bc
+amount0In: 0
+amount1In: 24750000000000000
+amount0Out: 378907340101278637677780
+amount1Out: 0
+to: 0x885FCD731B93ae7ad1BBb6F2Ca9977517A16F50A
+
+================
+
+Required fields for each event
+
+Create
+
+token address
+token name
+token symbol
+token creator address
+metadata: image url of token
+initial supply
+block time ???
+slot -> block number
+signature -> transaction id
+
+Trade
+direction: buy / sell
+buyer wallet
+token address
+token decimals
+meme token amount 
+market cap or liquidity of pool
+slot, signature
+blocktime
+
+
+Complete
+token address
+liquidity pool address
+slot, signature
+blocktime
+
+
+
+============
+
+
+Create Events
+
+---
+🎯 TokenCreate Event (V2):
+Token Address: 0xeB8fE8E9aD5B0e8771AA4EC2903d32608B54fFFF
+Token Name: 空中飞人
+Token Symbol: 空中飞人
+Creator Address: 0x3372Ea91568ECb3Ae74Ef9f803fd700aFD7e2abf
+Metadata: 101702127
+Initial Supply: 1000000000.0
+Block Time (approx): 2026-02-03T19:22:15.517Z
+Block Number: 79113519
+Transaction ID: 0x6555b216a00e76cd860eda46182b57d3d7a8667f8ecc5c64ae8f2bc0ba4c9c32
+Launch Time: 2026-02-03T19:22:10.000Z
+Launch Fee: 0.0
+---
+🎯 TokenCreate Event (V2):
+Token Address: 0xaf5cB58277304E19bb9D69f626fF5d2ffa504444
+Token Name: 年年有熊
+Token Symbol: 熊出没
+Creator Address: 0xC6C1d021AC32f453841D92c4497014F6bB29A609
+Metadata: 101702126
+Initial Supply: 1000000000.0
+Block Time (approx): 2026-02-03T19:22:24.103Z
+Block Number: 79113538
+Transaction ID: 0x59c3d7e63b9749d2fe33da72d076b0ac31760df33bd9bb6e54bd10d4c6e46d48
+Launch Time: 2026-02-03T19:21:29.000Z
+Launch Fee: 0.0
+---
+🎯 TokenCreate Event (V2):
+Token Address: 0x4444242E6e9047c10eD3cD46D5b115AceB7bBCB7
+Token Name: Zoidberg Bot
+Token Symbol: ZOIDBERG
+Creator Address: 0xa77e54461C30C7925ceBEaD788214ebBe4Cd079e
+Metadata: 101702128
+Initial Supply: 1000000000.0
+Block Time (approx): 2026-02-03T19:22:27.208Z
+Block Number: 79113545
+Transaction ID: 0xed8a79efd7026174f1ed882319e62ab281979253acd62af2030bccb464e1ddc5
+Launch Time: 2026-02-03T19:22:26.000Z
+Launch Fee: 0.0
+---
+🎯 TokenCreate Event (V2):
+Token Address: 0x10AEB33bc9e91FB5310a2088c07fAC6D7a35Ffff
+Token Name: AI HORSE
+Token Symbol: AI HORSE
+Creator Address: 0x64f93C9B8DA0f9eF14d4ccCB4679cD95E7d83ccc
+Metadata: 101702129
+Initial Supply: 1000000000.0
+Block Time (approx): 2026-02-03T19:24:02.645Z
+Block Number: 79113757
+Transaction ID: 0x89073dfddb30446ce60b77060b547fbd91490e83b0fbcf13bfb9818a70011486
+Launch Time: 2026-02-03T19:23:58.000Z
+Launch Fee: 0.0

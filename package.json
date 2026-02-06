@@ -1,0 +1,42 @@
+{
+  "name": "binance-token-monitor",
+  "version": "1.0.0",
+  "description": "Monitor all four.meme token events on Binance Smart Chain",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx --watch src/index.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "mockup": "tsx mockup/mockup.ts",
+    "mockup:dev": "tsx --watch mockup/mockup.ts",
+    "mockup:consumer": "tsx mockup/consumer.ts",
+    "mockup:consumer:dev": "tsx --watch mockup/consumer.ts",
+    "mockup:test": "tsx mockup/test-integration.ts",
+    "test": "tsx experiments/testing.ts",
+    "test:dev": "tsx --watch experiments/testing.ts",
+    "pancake": "tsx experiments/pancakeswap.ts",
+    "pancake:dev": "tsx --watch experiments/pancakeswap.ts"
+  },
+  "keywords": [
+    "binance",
+    "bsc",
+    "four.meme",
+    "token",
+    "monitor",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.9.0",
+    "dotenv": "^16.3.1",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsx": "^4.19.3",
+    "@types/node": "^20.8.0"
+  }
+}
