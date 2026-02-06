@@ -56,13 +56,13 @@ interface TokenSaleData {
 
 interface TokenCompleteData {
   chain_id: number;
-  token_address: string;
-  completion_wallet: string;
-  final_supply: string;
-  total_raised: string;
+  token_mint: string;
+  migrator_wallet: string;
+  liquidity_pool: string;
+  migration_fee: string;
   block_time: string;
-  block_number: number;
-  transaction_hash: string;
+  slot: number;
+  signature: string;
   kafka_timestamp: string;
 }
 
@@ -253,25 +253,25 @@ export async function test(): Promise<void> {
       // Extract completion data as specified in note.txt
       const completionData: TokenCompleteData = {
         chain_id: 0,
-        token_address: event.args.base || event.args[0],
-        completion_wallet: 'N/A', // Would need additional logic to get completion wallet
-        final_supply: 'N/A', // Would need additional logic to get final supply
-        total_raised: 'N/A', // Would need additional logic to get total raised
+        token_mint: event.args.base || event.args[0],
+        migrator_wallet: 'N/A', // Would need additional logic to get migrator wallet
+        liquidity_pool: 'N/A', // Would need additional logic to get liquidity pool
+        migration_fee: 'N/A', // Would need additional logic to get migration fee
         block_time: blockTime,
-        block_number: event.log.blockNumber,
-        transaction_hash: event.log.transactionHash,
+        slot: event.log.blockNumber,
+        signature: event.log.transactionHash,
         kafka_timestamp: new Date().toISOString(),
       };
 
       console.log('✅ Complete Event:');
       console.log('Chain ID:', completionData.chain_id);
-      console.log('Token Address:', completionData.token_address);
-      console.log('Completion Wallet:', completionData.completion_wallet);
-      console.log('Final Supply:', completionData.final_supply);
-      console.log('Total Raised:', completionData.total_raised);
+      console.log('Token Mint:', completionData.token_mint);
+      console.log('Migrator Wallet:', completionData.migrator_wallet);
+      console.log('Liquidity Pool:', completionData.liquidity_pool);
+      console.log('Migration Fee:', completionData.migration_fee);
       console.log('Block Time:', completionData.block_time);
-      console.log('Block Number:', completionData.block_number);
-      console.log('Transaction Hash:', completionData.transaction_hash);
+      console.log('Slot:', completionData.slot);
+      console.log('Signature:', completionData.signature);
       console.log('Kafka Timestamp:', completionData.kafka_timestamp);
       console.log('---');
 

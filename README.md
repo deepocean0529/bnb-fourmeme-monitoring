@@ -86,15 +86,15 @@ Emitted when a token completes its four.meme launch phase.
 
 ### TokenComplete Event
 
-Emitted when a token reaches completion on four.meme.
+Emitted when a token completes its four.meme launch phase.
 
 ```json
 {
   "chain_id": 0,
   "token_mint": "string",
-  "completion_wallet": "string",
-  "final_supply": "string",
-  "total_raised": "string",
+  "migrator_wallet": "string",
+  "liquidity_pool": "string",
+  "migration_fee": "string",
   "block_time": "number",
   "slot": "number",
   "signature": "string",

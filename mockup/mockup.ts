@@ -54,9 +54,9 @@ interface TokenSaleData {
 interface TokenCompleteData {
   chain_id: number;
   token_mint: string;
-  completion_wallet: string;
-  final_supply: string;
-  total_raised: string;
+  migrator_wallet: string;
+  liquidity_pool: string;
+  migration_fee: string;
   block_time: number;
   slot: number;
   signature: string;
@@ -211,15 +211,14 @@ export function generateCompletionEvent(): TokenCompleteData | null {
     return null;
   }
 
-  const finalSupply = (Math.random() * 2000000 + 1000000).toFixed(0);
-  const totalRaised = (Math.random() * 10 + 1).toFixed(2);
+  const migrationFee = (Math.random() * 0.1 + 0.01).toFixed(8); // Small BNB fee
 
   const event: TokenCompleteData = {
     chain_id: 0,
     token_mint: randomToken.token_mint,
-    completion_wallet: generateRandomWallet(),
-    final_supply: finalSupply,
-    total_raised: totalRaised,
+    migrator_wallet: generateRandomWallet(),
+    liquidity_pool: generateTokenAddress(Math.floor(Math.random() * 1000)), // Random pool address
+    migration_fee: migrationFee,
     block_time: Math.floor(Date.now() / 1000),
     slot: slotCounter++,
     signature: generateTransactionHash(),

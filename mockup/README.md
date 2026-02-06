@@ -85,9 +85,9 @@ All generated events follow the README.md schema with these fields:
 {
   "chain_id": 0,
   "token_mint": "string",
-  "completion_wallet": "string",
-  "final_supply": "string",
-  "total_raised": "string",
+  "migrator_wallet": "string",
+  "liquidity_pool": "string",
+  "migration_fee": "string",
   "block_time": "number",
   "slot": "number",
   "signature": "string",

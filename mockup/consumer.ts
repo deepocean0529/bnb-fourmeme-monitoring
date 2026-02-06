@@ -34,9 +34,9 @@ function formatEvent(event: any): string {
       // Trade event
       const action = parsed.direction === 'buy' ? 'bought' : 'sold';
       return `💰 ${parsed.buyer_wallet.substring(0, 10)}... ${action} ${parsed.token_amount} tokens`;
-    } else if (parsed.token_mint && parsed.final_supply) {
+    } else if (parsed.token_mint && parsed.migrator_wallet) {
       // Completion event
-      return `✅ Token ${parsed.token_mint.substring(0, 10)}... completed`;
+      return `✅ Token ${parsed.token_mint.substring(0, 10)}... migrated by ${parsed.migrator_wallet.substring(0, 10)}...`;
     }
 
     return `📄 ${JSON.stringify(parsed).substring(0, 100)}...`;
