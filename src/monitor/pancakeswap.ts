@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { Interface } from 'ethers';
+import { kafkaClient } from '../kafka/client.js';
 import {
   TokenPurchaseEvent,
   TokenSaleEvent
@@ -16,7 +17,8 @@ import {
   getPairReserves
 } from '../rpc/index.js';
 import {
-  pairContractABI
+  pairContractABI,
+  TOKEN_RAW_TRADE
 } from '../../config/config.js';
 
 // PancakeSwap trade data interface (adapted for PancakeSwap)
@@ -42,6 +44,44 @@ const PANCAKE_SWAP_PAIRS = [
   "0x9Fbd9892821efE8022881427EA6f03384080F351",
   "0xfaaa87be61eb923c60de3dd19cbca7654b52eb94",
 ];
+
+// Kafka producer
+let kafkaProducer: any = null;
+
+// Initialize Kafka producer
+async function initializeKafkaProducer() {
+  try {
+    kafkaProducer = kafkaClient.producer();
+    await kafkaProducer.connect();
+    console.log('✅ PancakeSwap Kafka producer connected');
+  } catch (error) {
+    console.error('❌ Failed to connect PancakeSwap Kafka producer:', error);
+    kafkaProducer = null;
+  }
+}
+
+// Send event to Kafka
+async function sendToKafka(topic: string, event: any) {
+  if (!kafkaProducer) {
+    console.log('⚠️ Kafka producer not available, skipping Kafka send');
+    return;
+  }
+
+  try {
+    await kafkaProducer.send({
+      topic,
+      messages: [
+        {
+          key: event.token_mint || event.signature || Math.random().toString(),
+          value: JSON.stringify(event),
+        },
+      ],
+    });
+    console.log(`📤 Sent PancakeSwap ${topic} event to Kafka`);
+  } catch (error) {
+    console.error(`❌ Failed to send PancakeSwap event to Kafka topic ${topic}:`, error);
+  }
+}
 
 async function handlePancakeSwapTrade(log: ethers.Log): Promise<PancakeSwapTradeData> {
   const provider = getRPCProvider().getProvider();
@@ -125,12 +165,18 @@ async function handlePancakeSwapTrade(log: ethers.Log): Promise<PancakeSwapTrade
   const eventType = direction === 'buy' ? 'TokenPurchase' : direction === 'sell' ? 'TokenSale' : 'UnknownTrade';
   console.log(createLogMessage(`PancakeSwap${eventType}`, tradeData));
 
+  // Send to Kafka
+  await sendToKafka(TOKEN_RAW_TRADE, tradeData);
+
   return tradeData;
 }
 
 // Main PancakeSwap monitoring function
 export async function startPancakeSwapMonitoring(): Promise<void> {
   console.log('🏊 Starting PancakeSwap monitoring...');
+
+  // Initialize Kafka producer
+  await initializeKafkaProducer();
 
   const provider = getRPCProvider().getProvider();
   const iface = new Interface(pairContractABI);

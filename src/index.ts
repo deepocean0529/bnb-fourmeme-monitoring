@@ -1,6 +1,7 @@
 import { initializeRPC, shutdownRPC } from './rpc/index.js';
 import { startFourMemeMonitoring } from './monitor/fourmeme.js';
 import { startPancakeSwapMonitoring } from './monitor/pancakeswap.js';
+import { connectToKafka } from './kafka/client.js';
 import { ALCHEMY_WS_URL } from '../config/config.js';
 
 // Main application entry point
@@ -11,6 +12,10 @@ async function startApplication(): Promise<void> {
     // Initialize RPC connection
     console.log('🔗 Initializing RPC connection...');
     await initializeRPC(ALCHEMY_WS_URL);
+
+    // Initialize Kafka connection
+    console.log('📡 Initializing Kafka connection...');
+    await connectToKafka();
 
     // Start monitoring services
     console.log('📊 Starting monitoring services...');

@@ -53,23 +53,13 @@ export interface CompleteFourMemeMigrationEvent extends BaseEvent {
   signature: string;
 }
 
-export interface TokenCompleteEvent extends BaseEvent {
-  token_mint: string;
-  completion_wallet: string;
-  final_supply: string;
-  total_raised: string;
-  block_time: number;
-  slot: number;
-  signature: string;
-}
 
 // Union type for all possible events
 export type FourMemeEvent =
   | TokenCreateEvent
   | TokenPurchaseEvent
   | TokenSaleEvent
-  | CompleteFourMemeMigrationEvent
-  | TokenCompleteEvent;
+  | CompleteFourMemeMigrationEvent;
 
 // Internal data structures for processing
 export interface TransactionDetails {

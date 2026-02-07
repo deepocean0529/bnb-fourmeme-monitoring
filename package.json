@@ -14,6 +14,7 @@
     "mockup:consumer": "tsx mockup/consumer.ts",
     "mockup:consumer:dev": "tsx --watch mockup/consumer.ts",
     "mockup:test": "tsx mockup/test-integration.ts",
+    "tx:analyze": "tsx experiments/transaction-details.ts",
     "test": "tsx experiments/testing.ts",
     "test:dev": "tsx --watch experiments/testing.ts",
     "pancake": "tsx experiments/pancakeswap.ts",

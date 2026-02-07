@@ -51,17 +51,6 @@ interface TokenSaleData {
   kafka_timestamp: string;
 }
 
-interface TokenCompleteData {
-  chain_id: number;
-  token_mint: string;
-  migrator_wallet: string;
-  liquidity_pool: string;
-  migration_fee: string;
-  block_time: number;
-  slot: number;
-  signature: string;
-  kafka_timestamp: string;
-}
 
 // Mock data generators
 const MOCK_NAMES = ['DogeCoin', 'ShibaInu', 'Pepe', 'Floki', 'BabyDoge', 'Kishu', 'Samoyed', 'Pitbull', 'Astro', 'Poodl'];
@@ -199,34 +188,6 @@ export function generateTradeEvent(): TokenPurchaseData | TokenSaleData | null {
   return tradeEvent as TokenPurchaseData | TokenSaleData;
 }
 
-export function generateCompletionEvent(): TokenCompleteData | null {
-  if (createdTokens.length === 0) {
-    return null; // No tokens created yet
-  }
-
-  // Pick a random created token
-  const randomIndex = Math.floor(Math.random() * createdTokens.length);
-  const randomToken = createdTokens[randomIndex];
-  if (!randomToken) {
-    return null;
-  }
-
-  const migrationFee = (Math.random() * 0.1 + 0.01).toFixed(8); // Small BNB fee
-
-  const event: TokenCompleteData = {
-    chain_id: 0,
-    token_mint: randomToken.token_mint,
-    migrator_wallet: generateRandomWallet(),
-    liquidity_pool: generateTokenAddress(Math.floor(Math.random() * 1000)), // Random pool address
-    migration_fee: migrationFee,
-    block_time: Math.floor(Date.now() / 1000),
-    slot: slotCounter++,
-    signature: generateTransactionHash(),
-    kafka_timestamp: new Date().toISOString()
-  };
-
-  return event;
-}
 
 // Event emission functions
 async function emitTokenCreateEvent() {
@@ -274,7 +235,6 @@ export async function startMockupService(): Promise<void> {
   console.log('📊 Event Generation Rates:');
   console.log('  • Token Creation: 1 every 5 seconds');
   console.log('  • Trade Events: 1 every 2 seconds per token');
-  console.log('  • Completion Events: 1 every 30 seconds');
   console.log('---');
 
   // Start token creation events (every 5 seconds)
@@ -294,15 +254,6 @@ export async function startMockupService(): Promise<void> {
       console.error('❌ Error emitting trade event:', error);
     }
   }, 2000);
-
-  // Start completion events (every 30 seconds)
-  setInterval(async () => {
-    try {
-      await emitCompletionEvent();
-    } catch (error) {
-      console.error('❌ Error emitting completion event:', error);
-    }
-  }, 30000);
 
   // Keep the process alive
   const shutdown = async () => {

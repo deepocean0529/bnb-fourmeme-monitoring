@@ -83,21 +83,3 @@ Emitted when a token completes its four.meme launch phase.
   "kafka_timestamp": "string"
 }
 ```
-
-### TokenComplete Event
-
-Emitted when a token completes its four.meme launch phase.
-
-```json
-{
-  "chain_id": 0,
-  "token_mint": "string",
-  "migrator_wallet": "string",
-  "liquidity_pool": "string",
-  "migration_fee": "string",
-  "block_time": "number",
-  "slot": "number",
-  "signature": "string",
-  "kafka_timestamp": "string"
-}
-```

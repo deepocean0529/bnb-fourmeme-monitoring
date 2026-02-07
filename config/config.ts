@@ -23,7 +23,6 @@ export const MONITOR_TOKEN_PURCHASE: boolean = true;
 export const MONITOR_TOKEN_SALE: boolean = true;
 export const MONITOR_LIQUIDITY_ADDED: boolean = true;
 export const MONITOR_TRADE_STOP: boolean = false;
-export const MONITOR_TOKEN_COMPLETION: boolean = true;
 
 // Connection Configuration
 export const MAX_RECONNECT_ATTEMPTS: number = 10;

@@ -54,17 +54,6 @@ interface TokenSaleData {
   kafka_timestamp: string;
 }
 
-interface TokenCompleteData {
-  chain_id: number;
-  token_mint: string;
-  migrator_wallet: string;
-  liquidity_pool: string;
-  migration_fee: string;
-  block_time: string;
-  slot: number;
-  signature: string;
-  kafka_timestamp: string;
-}
 
 // Helper functions
 function formatBNB(value: ethers.BigNumberish): string {
@@ -250,30 +239,6 @@ export async function test(): Promise<void> {
         ? new Date(blockTimestamp).toISOString()
         : 'Block timestamp fetch failed';
 
-      // Extract completion data as specified in note.txt
-      const completionData: TokenCompleteData = {
-        chain_id: 0,
-        token_mint: event.args.base || event.args[0],
-        migrator_wallet: 'N/A', // Would need additional logic to get migrator wallet
-        liquidity_pool: 'N/A', // Would need additional logic to get liquidity pool
-        migration_fee: 'N/A', // Would need additional logic to get migration fee
-        block_time: blockTime,
-        slot: event.log.blockNumber,
-        signature: event.log.transactionHash,
-        kafka_timestamp: new Date().toISOString(),
-      };
-
-      console.log('✅ Complete Event:');
-      console.log('Chain ID:', completionData.chain_id);
-      console.log('Token Mint:', completionData.token_mint);
-      console.log('Migrator Wallet:', completionData.migrator_wallet);
-      console.log('Liquidity Pool:', completionData.liquidity_pool);
-      console.log('Migration Fee:', completionData.migration_fee);
-      console.log('Block Time:', completionData.block_time);
-      console.log('Slot:', completionData.slot);
-      console.log('Signature:', completionData.signature);
-      console.log('Kafka Timestamp:', completionData.kafka_timestamp);
-      console.log('---');
 
     } catch (error) {
       console.error('Error handling LiquidityAdded (Complete) event:', (error as Error).message);
@@ -281,7 +246,7 @@ export async function test(): Promise<void> {
   });
 
   console.log('✅ Event monitoring started for V2 contract');
-  console.log('Monitoring: TokenCreate, TokenPurchase (BUY), TokenSale (SELL), LiquidityAdded (Complete)');
+  console.log('Monitoring: TokenCreate, TokenPurchase (BUY), TokenSale (SELL), LiquidityAdded');
   console.log('Listening on contract:', TOKEN_MANAGER_V2);
 
   /*

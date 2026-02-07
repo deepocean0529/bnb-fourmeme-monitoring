@@ -1,10 +1,10 @@
 import { ethers } from 'ethers';
+import { kafkaClient } from '../kafka/client.js';
 import {
   TokenCreateEvent,
   TokenPurchaseEvent,
   TokenSaleEvent,
   CompleteFourMemeMigrationEvent,
-  TokenCompleteEvent,
   CreatedToken,
   LiquidityData,
   TradeStopData,
@@ -30,15 +30,55 @@ import {
   MONITOR_TOKEN_SALE,
   MONITOR_LIQUIDITY_ADDED,
   MONITOR_TRADE_STOP,
-  MONITOR_TOKEN_COMPLETION,
   tokenManagerV1ABI,
   tokenManagerV2ABI,
   TOKEN_MANAGER_V1,
-  TOKEN_MANAGER_V2
+  TOKEN_MANAGER_V2,
+  TOKEN_RAW_CREATED,
+  TOKEN_RAW_TRADE,
+  TOKEN_RAW_MIGRATED
 } from '../../config/config.js';
 
 // Track created tokens
 let createdTokens: CreatedToken[] = [];
+
+// Kafka producer
+let kafkaProducer: any = null;
+
+// Initialize Kafka producer
+async function initializeKafkaProducer() {
+  try {
+    kafkaProducer = kafkaClient.producer();
+    await kafkaProducer.connect();
+    console.log('✅ Four.meme Kafka producer connected');
+  } catch (error) {
+    console.error('❌ Failed to connect Four.meme Kafka producer:', error);
+    kafkaProducer = null;
+  }
+}
+
+// Send event to Kafka
+async function sendToKafka(topic: string, event: FourMemeEvent) {
+  if (!kafkaProducer) {
+    console.log('⚠️ Kafka producer not available, skipping Kafka send');
+    return;
+  }
+
+  try {
+    await kafkaProducer.send({
+      topic,
+      messages: [
+        {
+          key: event.token_mint || event.signature || Math.random().toString(),
+          value: JSON.stringify(event),
+        },
+      ],
+    });
+    console.log(`📤 Sent ${topic} event to Kafka`);
+  } catch (error) {
+    console.error(`❌ Failed to send event to Kafka topic ${topic}:`, error);
+  }
+}
 
 // Event handlers
 async function handleTokenCreate(contractVersion: string, event: any): Promise<TokenCreateEvent> {
@@ -70,6 +110,10 @@ async function handleTokenCreate(contractVersion: string, event: any): Promise<T
   });
 
   console.log(createLogMessage('TokenCreate', tokenData));
+
+  // Send to Kafka
+  await sendToKafka(TOKEN_RAW_CREATED, tokenData);
+
   return tokenData;
 }
 
@@ -90,7 +134,8 @@ async function handleTokenPurchase(contractVersion: string, event: any): Promise
 
     if (price > 0) {
       try {
-        const totalSupply = await getTokenTotalSupply(provider, args.token || args[0]);
+        // const totalSupply = await getTokenTotalSupply(provider, args.token || args[0]);
+        const totalSupply = 1000000000; // 1 billion tokens is default for four.meme and this saves API calls
         if (totalSupply) {
           const supply = parseFloat(formatToken(totalSupply));
           marketCapValue = calculateMarketCap(price, supply);
@@ -121,6 +166,10 @@ async function handleTokenPurchase(contractVersion: string, event: any): Promise
   };
 
   console.log(createLogMessage('TokenPurchase', tradeData));
+
+  // Send to Kafka
+  await sendToKafka(TOKEN_RAW_TRADE, tradeData);
+
   return tradeData;
 }
 
@@ -172,6 +221,10 @@ async function handleTokenSale(contractVersion: string, event: any): Promise<Tok
   };
 
   console.log(createLogMessage('TokenSale', tradeData));
+
+  // Send to Kafka
+  await sendToKafka(TOKEN_RAW_TRADE, tradeData);
+
   return tradeData;
 }
 
@@ -183,11 +236,38 @@ async function handleLiquidityAdded(contractVersion: string, event: any): Promis
   const blockTimestamp = await blockTimeManager.getBlockTimestamp(provider, event.log.blockNumber);
   const blockTime = blockTimestamp ? Math.floor(blockTimestamp / 1000) : Math.floor(Date.now() / 1000);
 
+  const tokenAddress = args.base || args[0];
+
+  // Read migrator_wallet and liquidity_pool from token contract
+  let migratorWallet = 'N/A';
+  let liquidityPool = 'N/A';
+
+  try {
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      [
+        'function founder() view returns (address)',
+        'function pair() view returns (address)'
+      ],
+      provider
+    );
+
+    const [founderAddress, pairAddress] = await Promise.all([
+      tokenContract.founder!(),
+      tokenContract.pair!()
+    ]);
+
+    migratorWallet = founderAddress;
+    liquidityPool = pairAddress;
+  } catch (error) {
+    console.warn(`⚠️ Could not read contract data for token ${tokenAddress}:`, (error as Error).message);
+  }
+
   const liquidityData: CompleteFourMemeMigrationEvent = {
     chain_id: 0,
-    token_mint: args.base || args[0],
-    migrator_wallet: 'N/A', // Would need additional logic to get migrator wallet
-    liquidity_pool: 'N/A', // Would need additional logic to derive actual pool address
+    token_mint: tokenAddress,
+    migrator_wallet: migratorWallet,
+    liquidity_pool: liquidityPool,
     migration_fee: formatBNB(args.funds || args[3]),
     block_time: blockTime,
     slot: event.log.blockNumber,
@@ -197,14 +277,8 @@ async function handleLiquidityAdded(contractVersion: string, event: any): Promis
 
   console.log(createLogMessage('CompleteFourMemeMigration', liquidityData));
 
-  // Also trigger completion handler when liquidity is added (token is completed)
-  if (MONITOR_TOKEN_COMPLETION) {
-    try {
-      await handleTokenCompletion(contractVersion, args.base || args[0], event.log.transactionHash);
-    } catch (error) {
-      console.error(`Error handling TokenCompletion event:`, (error as Error).message);
-    }
-  }
+  // Send to Kafka
+  await sendToKafka(TOKEN_RAW_MIGRATED, liquidityData);
 
   return liquidityData;
 }
@@ -221,24 +295,6 @@ async function handleTradeStop(event: any): Promise<TradeStopData> {
   return tradeStopData;
 }
 
-async function handleTokenCompletion(contractVersion: string, tokenAddress: string, txHash: string): Promise<TokenCompleteEvent> {
-  const provider = getRPCProvider().getProvider();
-
-  const completionData: TokenCompleteEvent = {
-    chain_id: 0,
-    token_mint: tokenAddress,
-    completion_wallet: 'N/A', // Would need additional logic to get completion wallet
-    final_supply: 'N/A', // Would need additional logic to get final supply
-    total_raised: 'N/A', // Would need additional logic to get total raised
-    block_time: Math.floor(Date.now() / 1000),
-    slot: 0, // Would need to get from transaction
-    signature: txHash,
-    kafka_timestamp: generateKafkaTimestamp()
-  };
-
-  console.log(createLogMessage('TokenCompleted', completionData));
-  return completionData;
-}
 
 // Setup event listeners for a contract
 function setupEventListeners(
@@ -305,6 +361,9 @@ function setupEventListeners(
 // Main monitoring function
 export async function startFourMemeMonitoring(): Promise<void> {
   console.log('🎯 Starting Four.meme Token Monitoring...');
+
+  // Initialize Kafka producer
+  await initializeKafkaProducer();
 
   const provider = getRPCProvider().getProvider();
 
