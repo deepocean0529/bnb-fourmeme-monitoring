@@ -134,8 +134,7 @@ async function handleTokenPurchase(contractVersion: string, event: any): Promise
 
     if (price > 0) {
       try {
-        // const totalSupply = await getTokenTotalSupply(provider, args.token || args[0]);
-        const totalSupply = 1000000000; // 1 billion tokens is default for four.meme and this saves API calls
+        const totalSupply = await getTokenTotalSupply(provider, args.token || args[0]);
         if (totalSupply) {
           const supply = parseFloat(formatToken(totalSupply));
           marketCapValue = calculateMarketCap(price, supply);
